@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Vacancy {
+  id         String     @id @default(uuid())
+  title      String
+  experience Experience @default(JUNIOR)
+  office     Office     @relation(fields: [officeId], references: [id])
+  officeId   String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@map("vacancies")
+}
+
+model City {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  Office    Office[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("cities")
+}
+
+model Office {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  address   String
+  city      City      @relation(fields: [cityId], references: [id])
+  cityId    String
+  Vacancy   Vacancy[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("offices")
+}
+
+enum Experience {
+  JUNIOR
+  MIDDLE
+  SENIOR
+  ANY
+}
